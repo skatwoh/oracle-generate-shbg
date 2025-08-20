@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hex Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      max-width: 700px;
+      margin: auto;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-bottom: 20px;
+      font-family: monospace;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    .output {
+      margin-top: 20px;
+      background: #f2f2f2;
+      padding: 15px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <h2>Chuyển List Hex (0xNN, ...) về dạng nối liền (0xNNNNNN...)</h2>
+  <label>Nhập chuỗi hex từng byte (ví dụ: 0x50, 0x4B, 0x03, ...):</label>
+  <textarea id="inputHex" placeholder="0x50, 0x4B, 0x03, 0x04, 0x14, 0x00"></textarea>
+  <button onclick="convertHex()">Chuyển đổi</button>
+
+  <div class="output" id="outputHex"></div>
+
+  <script>
+    function convertHex() {
+      const input = document.getElementById('inputHex').value;
+      const hexParts = input.split(',').map(part => part.trim().replace(/^0x/i, '').padStart(2, '0'));
+      const hexString = '0x' + hexParts.join('');
+      document.getElementById('outputHex').innerText = hexString;
+    }
+  </script>
+</body>
+</html>
