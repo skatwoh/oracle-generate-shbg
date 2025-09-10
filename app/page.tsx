@@ -13,6 +13,9 @@ import { CheckCircle, XCircle, Code, Database, Copy } from "lucide-react"
 import TrueFocus from "@/components/ui/TrueFocus"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
+import ElectricBorder from "@/components/ElectricBorder"
+import TextType from "@/components/TextType"
+import PetRunner from "./PetRunner"
 
 interface ValidationResult {
   isValid: boolean
@@ -106,130 +109,138 @@ export default function OracleCodeGenerator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <PetRunner />
       <Toaster />
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
             <Database className="h-8 w-8 text-blue-600" />
-            <TrueFocus
-              sentence="Tool tạo SHBG"
-              manualMode={false}
-              blurAmount={5}
-              borderColor="red"
-              animationDuration={2}
-              pauseBetweenAnimations={1}
+            <TextType
+              text={["Tự động sinh mã", "Kiểm tra mã vận đơn", "Hẹ Hẹ Hẹ 🤡"]}
+              typingSpeed={75}
+              pauseDuration={1500}
+              showCursor={true}
+              cursorCharacter="|"
             />
+            <Database className="h-8 w-8 text-blue-600" />
           </h1>
-          <p className="text-gray-600">Tự động sinh mã và kiểm tra mã vận đơn Oracle</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Code className="h-5 w-5" />
-                Thông tin đầu vào
-              </CardTitle>
-              <CardDescription>
-                Nhập thông tin để {mode === "validate" ? "kiểm tra" : "sinh mã"} vận đơn
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2 mb-4">
-                <Button
-                  variant={mode === "validate" ? "default" : "outline"}
-                  onClick={() => setMode("validate")}
-                  size="sm"
-                >
-                  Kiểm tra mã
-                </Button>
-                <Button
-                  variant={mode === "generate" ? "default" : "outline"}
-                  onClick={() => setMode("generate")}
-                  size="sm"
-                >
-                  Sinh mã mới
-                </Button>
-              </div>
+          <ElectricBorder
+            color="#7df9ff"
+            speed={1}
+            chaos={0.5}
+            thickness={2}
+            style={{ borderRadius: 16 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Code className="h-5 w-5" />
+                  Thông tin đầu vào
+                </CardTitle>
+                <CardDescription>
+                  Nhập thông tin để {mode === "validate" ? "kiểm tra" : "sinh mã"} vận đơn
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    variant={mode === "validate" ? "default" : "outline"}
+                    onClick={() => setMode("validate")}
+                    size="sm"
+                  >
+                    Kiểm tra mã
+                  </Button>
+                  <Button
+                    variant={mode === "generate" ? "default" : "outline"}
+                    onClick={() => setMode("generate")}
+                    size="sm"
+                  >
+                    Sinh mã mới
+                  </Button>
+                </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="serviceCode">Service Code <span className="text-red-500">*</span></Label>
-                  <Select value={serviceCode} onValueChange={setServiceCode} required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn loại dịch vụ" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {serviceOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {/* <Input
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceCode">Service Code <span className="text-red-500">*</span></Label>
+                    <Select value={serviceCode} onValueChange={setServiceCode} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn loại dịch vụ" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serviceOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {/* <Input
                     id="serviceCode"
                     onChange={(e) => setServiceCode(e.target.value)}
                     placeholder="Chọn hoặc nhập mã dịch vụ"
                     className="mt-2"
                   /> */}
-                </div>
+                  </div>
 
-                {mode === "validate" && (
+                  {mode === "validate" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="shbg">
+                        Mã vận đơn (SHBG) <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="shbg"
+                        value={shbg}
+                        onChange={(e) => setShbg(e.target.value.toUpperCase())}
+                        placeholder="Nhập mã vận đơn cần kiểm tra"
+                        required
+                      />
+                    </div>
+                  )}
+
                   <div className="space-y-2">
-                    <Label htmlFor="shbg">
-                      Mã vận đơn (SHBG) <span className="text-red-500">*</span>
-                    </Label>
+                    <Label htmlFor="pocode">Mã bưu cục (PO Code) <span className="text-red-500">*</span></Label>
                     <Input
-                      id="shbg"
-                      value={shbg}
-                      onChange={(e) => setShbg(e.target.value.toUpperCase())}
-                      placeholder="Nhập mã vận đơn cần kiểm tra"
+                      id="pocode"
+                      value={pocode}
+                      onChange={(e) => setPocode(e.target.value)}
+                      placeholder="Mã bưu cục (tùy chọn)"
                       required
                     />
                   </div>
-                )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="pocode">Mã bưu cục (PO Code) <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="pocode"
-                    value={pocode}
-                    onChange={(e) => setPocode(e.target.value)}
-                    placeholder="Mã bưu cục (tùy chọn)"
-                    required
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="recnational">Quốc gia nhận</Label>
+                    <Input
+                      id="recnational"
+                      value={"VN"}
+                      onChange={(e) => setRecnational("VN")}
+                      placeholder="VN, CN, TW, US..."
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="recnational">Quốc gia nhận</Label>
-                  <Input
-                    id="recnational"
-                    value={"VN"}
-                    onChange={(e) => setRecnational("VN")}
-                    placeholder="VN, CN, TW, US..."
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="isPackageIncident">Bưu gửi sự vụ</Label>
+                    <Select value={isPackageIncident} onValueChange={setIsPackageIncident}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">Không</SelectItem>
+                        <SelectItem value="1">Có</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="isPackageIncident">Bưu gửi sự vụ</Label>
-                  <Select value={isPackageIncident} onValueChange={setIsPackageIncident}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">Không</SelectItem>
-                      <SelectItem value="1">Có</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Đang xử lý..." : mode === "validate" ? "Kiểm tra mã" : "Sinh mã mới"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Đang xử lý..." : mode === "validate" ? "Kiểm tra mã" : "Sinh mã mới"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </ElectricBorder>
 
           <Card>
             <CardHeader>
