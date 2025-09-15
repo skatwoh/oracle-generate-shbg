@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useEffect, useState } from "react"
 
 export default function PetRunner() {
@@ -31,14 +32,14 @@ export default function PetRunner() {
         position: "fixed",
         bottom: "20px",
         left: position,
-        fontSize: "50px",
+        fontSize: "200px",
         transform: direction === -1 ? "scaleX(-1)" : "scaleX(1)",
         transition: "transform 0.3s",
         pointerEvents: "none",
         zIndex: 9999,
       }}
     >
-      🐕 🐕 🐕
+      <Image src="/images/lan.png" alt="Pet" width={200} height={200} />
     </div>
   )
 }
