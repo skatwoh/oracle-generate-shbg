@@ -430,14 +430,6 @@ export default function OracleCodeGenerator() {
     }
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast({
-      title: "Đã sao chép",
-      description: "Mã đã được sao chép vào clipboard.",
-    })
-  }
-
   return (
     <div
       className="min-h-screen relative overflow-hidden
