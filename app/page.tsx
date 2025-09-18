@@ -197,6 +197,7 @@ export default function OracleCodeGenerator() {
   const [showBulkModal, setShowBulkModal] = useState(false)
   const [bulkCount, setBulkCount] = useState("")
   const [bulkLoading, setBulkLoading] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState(0)
 
   const serviceOptions = [
     { value: "RTN", label: "RTN - Bưu phẩm đảm bảo" },
@@ -285,12 +286,12 @@ export default function OracleCodeGenerator() {
     }
 
     setBulkLoading(true)
+    setBulkProgress(0)
 
     try {
       const count = Number.parseInt(bulkCount)
       const codes = []
 
-      // Generate multiple codes
       for (let i = 0; i < count; i++) {
         const response = await fetch("/api/generate", {
           method: "POST",
@@ -309,6 +310,9 @@ export default function OracleCodeGenerator() {
         if (data.isValid && data.generatedCode) {
           codes.push(data.generatedCode)
         }
+
+        const progress = Math.round(((i + 1) / count) * 100)
+        setBulkProgress(progress)
       }
 
       const csvContent = "data:text/csv;charset=utf-8," + codes.join("\n")
@@ -328,6 +332,7 @@ export default function OracleCodeGenerator() {
 
       setShowBulkModal(false)
       setBulkCount("")
+      setBulkProgress(0)
     } catch (error) {
       console.error("Error:", error)
       toast({
@@ -353,14 +358,12 @@ export default function OracleCodeGenerator() {
       className="min-h-screen relative overflow-hidden 
   bg-gradient-to-b from-indigo-950 via-purple-900 to-pink-800 p-4"
     >
-      {/* ánh sáng trăng vàng ở góc phải */}
       <div
         className="absolute inset-0 
     bg-[radial-gradient(circle_at_top_right,_rgba(255,255,150,0.25),_transparent_70%)]
     pointer-events-none"
       ></div>
 
-      {/* ánh đỏ đèn lồng phía dưới */}
       <div
         className="absolute inset-0 
     bg-[radial-gradient(circle_at_bottom_left,_rgba(255,100,100,0.2),_transparent_70%)]
@@ -368,19 +371,16 @@ export default function OracleCodeGenerator() {
       ></div>
 
       <Toaster />
-      {/* Mid-Autumn Festival Decorations */}
       <StarField />
       <MidAutumnMoon />
       <MoonRabbit />
 
       <PetRunner />
 
-      {/* Floating Lanterns */}
       {Array.from({ length: 20 }).map((_, i) => (
         <FloatingLantern key={i} delay={i * 0.5} speed={0.5 + Math.random() * 0.5} />
       ))}
 
-      {/* Mooncakes */}
       <Mooncake x={15} y={25} rotation={45} />
       <Mooncake x={85} y={35} rotation={-30} />
       <Mooncake x={25} y={75} rotation={60} />
@@ -388,7 +388,6 @@ export default function OracleCodeGenerator() {
       <Mooncake x={5} y={60} rotation={90} />
       <Mooncake x={90} y={65} rotation={15} />
 
-      {/* Festival Title Banner */}
       <div className="absolute top-0 left-0 right-0 text-center py-4 z-10">
         <div className="inline-block bg-gradient-to-r from-red-500 via-yellow-500 to-red-500 text-white px-8 py-2 rounded-full text-lg font-bold shadow-lg">
           🏮 Chúc Mừng Tết Trung Thu 2025 🥮
@@ -411,14 +410,12 @@ export default function OracleCodeGenerator() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Left Card with Electric Border Effect */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-2xl blur-sm opacity-30 animate-pulse"></div>
             <Card
               className="relative bg-gradient-to-br from-yellow-50 via-orange-100 to-amber-200 
                  border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden"
             >
-              {/* Icon trang trí góc */}
               <div className="absolute top-2 left-2 text-xl">🌕</div>
               <div className="absolute top-2 right-2 text-xl">🏮</div>
               <div className="absolute bottom-2 left-2 text-xl">🐇</div>
@@ -490,13 +487,28 @@ export default function OracleCodeGenerator() {
                             value={bulkCount}
                             onChange={(e) => setBulkCount(e.target.value)}
                             placeholder="Nhập số lượng (tối đa 1000)"
+                            disabled={bulkLoading}
                           />
                         </div>
+                        {bulkLoading && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm text-gray-600">
+                              <span>Đang sinh mã...</span>
+                              <span>{bulkProgress}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
+                                style={{ width: `${bulkProgress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
                         <div className="flex gap-2">
                           <Button onClick={handleBulkGenerate} disabled={bulkLoading} className="flex-1">
-                            {bulkLoading ? "Đang sinh..." : "Sinh & Tải xuống"}
+                            {bulkLoading ? `Đang sinh... ${bulkProgress}%` : "Sinh & Tải xuống"}
                           </Button>
-                          <Button variant="outline" onClick={() => setShowBulkModal(false)}>
+                          <Button variant="outline" onClick={() => setShowBulkModal(false)} disabled={bulkLoading}>
                             Hủy
                           </Button>
                         </div>
@@ -598,7 +610,6 @@ export default function OracleCodeGenerator() {
             className="relative bg-gradient-to-br from-yellow-100 via-orange-200 to-amber-300 
                  border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden"
           >
-            {/* trang trí góc bằng emoji / icon */}
             <div className="absolute top-2 left-2 text-2xl">🌕</div>
             <div className="absolute top-2 right-2 text-2xl">🏮</div>
             <div className="absolute bottom-2 left-2 text-2xl">🐇</div>
