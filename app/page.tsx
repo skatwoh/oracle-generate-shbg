@@ -9,13 +9,20 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle, Code, Database, Copy } from "lucide-react"
-import TrueFocus from "@/components/ui/TrueFocus"
+import { CheckCircle, XCircle, Code, Database, Copy, Download } from "lucide-react"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
 import ElectricBorder from "@/components/ElectricBorder"
 import TextType from "@/components/TextType"
 import PetRunner from "./PetRunner"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface ValidationResult {
   isValid: boolean
@@ -38,6 +45,12 @@ export default function OracleCodeGenerator() {
   const [result, setResult] = useState<ValidationResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<"validate" | "generate">("validate")
+  const [showBulkModal, setShowBulkModal] = useState(false)
+  const [bulkCount, setBulkCount] = useState("")
+  const [bulkLoading, setBulkLoading] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState(0)
+  const [cancelBulk, setCancelBulk] = useState(false)
+  const [abortController, setAbortController] = useState<AbortController | null>(null)
 
   const serviceOptions = [
     { value: "RTN", label: "RTN - Bưu phẩm đảm bảo" },
@@ -73,6 +86,101 @@ export default function OracleCodeGenerator() {
     { value: "HCC003", label: "HCC003" },
     { value: "HCC004", label: "HCC004" },
   ]
+
+  const handleBulkGenerate = async () => {
+    if (!serviceCode) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn Service Code trước.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!bulkCount || Number.parseInt(bulkCount) <= 0) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập số lượng hợp lệ.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setBulkLoading(true)
+    setBulkProgress(0)
+    setCancelBulk(false)
+
+    const controller = new AbortController()
+    setAbortController(controller)
+
+    try {
+      const count = Number.parseInt(bulkCount)
+      const codes: string[] = []
+
+      for (let i = 0; i < count; i++) {
+        if (cancelBulk) {
+          console.log("Bulk generation cancelled before fetch")
+          break
+        }
+
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serviceCode,
+            pocode,
+            recnational,
+            isPackageIncident,
+          }),
+          signal: controller.signal, // ⬅️ truyền signal vào fetch
+        })
+
+        const data = await response.json()
+        if (data.isValid && data.generatedCode) {
+          codes.push(data.generatedCode)
+        }
+
+        const progress = Math.round(((i + 1) / count) * 100)
+        setBulkProgress(progress)
+      }
+
+      if (!cancelBulk && codes.length > 0) {
+        const csvContent = "data:text/csv;charset=utf-8," + codes.join("\n")
+        const encodedUri = encodeURI(csvContent)
+        const link = document.createElement("a")
+        link.setAttribute("href", encodedUri)
+        link.setAttribute(
+          "download",
+          `van-don-${serviceCode}-${new Date().toISOString().split("T")[0]}.csv`
+        )
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        toast({
+          title: "Thành công",
+          description: `Đã sinh ${codes.length} mã vận đơn và tải xuống file Excel.`,
+        })
+      }
+
+      // setShowBulkModal(false)
+      setBulkCount("")
+      setBulkProgress(0)
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        console.log("Fetch aborted")
+      } else {
+        console.error("Error:", error)
+        toast({
+          title: "Lỗi",
+          description: "Có lỗi xảy ra khi sinh mã hàng loạt.",
+          variant: "destructive",
+        })
+      }
+    } finally {
+      setBulkLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -160,6 +268,83 @@ export default function OracleCodeGenerator() {
                   >
                     Sinh mã mới
                   </Button>
+                  <Dialog open={showBulkModal} onOpenChange={setShowBulkModal}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-purple-400 text-purple-700 hover:bg-purple-50 bg-transparent"
+                      >
+                        Nâng cao
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <Download className="h-5 w-5" />
+                          Sinh mã hàng loạt
+                        </DialogTitle>
+                        <DialogDescription>
+                          Nhập số lượng mã vận đơn muốn sinh và tải xuống file Excel
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="bulkCount">Số lượng mã cần sinh</Label>
+                          <Input
+                            id="bulkCount"
+                            type="number"
+                            min="1"
+                            max="1000"
+                            value={bulkCount}
+                            onChange={(e) => setBulkCount(e.target.value)}
+                            placeholder="Nhập số lượng (tối đa 1000)"
+                            disabled={bulkLoading}
+                          />
+                        </div>
+                        {bulkLoading && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm text-gray-600">
+                              <span>Đang sinh mã...</span>
+                              <span>{bulkProgress}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
+                                style={{ width: `${bulkProgress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <Button onClick={handleBulkGenerate} disabled={bulkLoading} className="flex-1">
+                            {bulkLoading ? `Đang sinh... ${bulkProgress}%` : "Sinh & Tải xuống"}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setCancelBulk(true)
+                              abortController?.abort()
+
+                              setBulkLoading(false)
+                              setBulkProgress(0)
+                              setBulkCount("")
+
+                              toast({
+                                title: "Đã hủy",
+                                description: "Quá trình sinh mã hàng loạt đã được hủy.",
+                              })
+
+                              setShowBulkModal(false)
+                              setTimeout(() => setCancelBulk(false), 100)
+                            }}
+                          >
+                            Hủy
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
