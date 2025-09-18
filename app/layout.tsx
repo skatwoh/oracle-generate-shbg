@@ -2,7 +2,11 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Oracle Code Generator',
+  title: 'Tool tạo mã vận đơn',
+  icons: {
+    icon: './logo/tinder.ico',
+  },
+  description: 'Tool tạo mã vận đơn hàng loạt miễn phí',
 }
 
 export default function RootLayout({

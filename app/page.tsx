@@ -7,6 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { CheckCircle, XCircle, Code, Database, Copy, Download } from "lucide-react"
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/hooks/use-toast"
+import TextType from "@/components/TextType"
+import PetRunner from "./PetRunner"
 import {
   Dialog,
   DialogContent,
@@ -15,12 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { CheckCircle, XCircle, Code, Database, Copy, Download } from "lucide-react"
 import Image from "next/image"
-import PetRunner from "./PetRunner"
-import { Toaster } from "@/components/ui/toaster"
-import { useToast } from "@/hooks/use-toast"
-import TextType from "@/components/TextType"
+
 
 interface ValidationResult {
   isValid: boolean
@@ -193,11 +194,12 @@ export default function OracleCodeGenerator() {
   const [result, setResult] = useState<ValidationResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<"validate" | "generate">("validate")
-
   const [showBulkModal, setShowBulkModal] = useState(false)
   const [bulkCount, setBulkCount] = useState("")
   const [bulkLoading, setBulkLoading] = useState(false)
   const [bulkProgress, setBulkProgress] = useState(0)
+  const [cancelBulk, setCancelBulk] = useState(false)
+  const [abortController, setAbortController] = useState<AbortController | null>(null)
 
   const serviceOptions = [
     { value: "RTN", label: "RTN - Bưu phẩm đảm bảo" },
@@ -235,6 +237,103 @@ export default function OracleCodeGenerator() {
   ]
 
   const handleSubmit = async () => {
+  const handleBulkGenerate = async () => {
+    if (!serviceCode) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn Service Code trước.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!bulkCount || Number.parseInt(bulkCount) <= 0) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập số lượng hợp lệ.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setBulkLoading(true)
+    setBulkProgress(0)
+    setCancelBulk(false)
+
+    const controller = new AbortController()
+    setAbortController(controller)
+
+    try {
+      const count = Number.parseInt(bulkCount)
+      const codes: string[] = []
+
+      for (let i = 0; i < count; i++) {
+        if (cancelBulk) {
+          console.log("Bulk generation cancelled before fetch")
+          break
+        }
+
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serviceCode,
+            pocode,
+            recnational,
+            isPackageIncident,
+          }),
+          signal: controller.signal, // ⬅️ truyền signal vào fetch
+        })
+
+        const data = await response.json()
+        if (data.isValid && data.generatedCode) {
+          codes.push(data.generatedCode)
+        }
+
+        const progress = Math.round(((i + 1) / count) * 100)
+        setBulkProgress(progress)
+      }
+
+      if (!cancelBulk && codes.length > 0) {
+        const csvContent = "data:text/csv;charset=utf-8," + codes.join("\n")
+        const encodedUri = encodeURI(csvContent)
+        const link = document.createElement("a")
+        link.setAttribute("href", encodedUri)
+        link.setAttribute(
+          "download",
+          `van-don-${serviceCode}-${new Date().toISOString().split("T")[0]}.csv`
+        )
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        toast({
+          title: "Thành công",
+          description: `Đã sinh ${codes.length} mã vận đơn và tải xuống file Excel.`,
+        })
+      }
+
+      // setShowBulkModal(false)
+      setBulkCount("")
+      setBulkProgress(0)
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        console.log("Fetch aborted")
+      } else {
+        console.error("Error:", error)
+        toast({
+          title: "Lỗi",
+          description: "Có lỗi xảy ra khi sinh mã hàng loạt.",
+          variant: "destructive",
+        })
+      }
+    } finally {
+      setBulkLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
 
     try {
@@ -266,106 +365,19 @@ export default function OracleCodeGenerator() {
     }
   }
 
-  const handleBulkGenerate = async () => {
-    if (!serviceCode) {
-      toast({
-        title: "Lỗi",
-        description: "Vui lòng chọn Service Code trước.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!bulkCount || Number.parseInt(bulkCount) <= 0) {
-      toast({
-        title: "Lỗi",
-        description: "Vui lòng nhập số lượng hợp lệ.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setBulkLoading(true)
-    setBulkProgress(0)
-
-    try {
-      const count = Number.parseInt(bulkCount)
-      const codes = []
-
-      for (let i = 0; i < count; i++) {
-        const response = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            serviceCode,
-            pocode,
-            recnational,
-            isPackageIncident,
-          }),
-        })
-
-        const data = await response.json()
-        if (data.isValid && data.generatedCode) {
-          codes.push(data.generatedCode)
-        }
-
-        const progress = Math.round(((i + 1) / count) * 100)
-        setBulkProgress(progress)
-      }
-
-      const csvContent = "data:text/csv;charset=utf-8," + codes.join("\n")
-
-      const encodedUri = encodeURI(csvContent)
-      const link = document.createElement("a")
-      link.setAttribute("href", encodedUri)
-      link.setAttribute("download", `van-don-${serviceCode}-${new Date().toISOString().split("T")[0]}.csv`)
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-
-      toast({
-        title: "Thành công",
-        description: `Đã sinh ${codes.length} mã vận đơn và tải xuống file Excel.`,
-      })
-
-      setShowBulkModal(false)
-      setBulkCount("")
-      setBulkProgress(0)
-    } catch (error) {
-      console.error("Error:", error)
-      toast({
-        title: "Lỗi",
-        description: "Có lỗi xảy ra khi sinh mã hàng loạt.",
-        variant: "destructive",
-      })
-    } finally {
-      setBulkLoading(false)
-    }
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast({
-      title: "Đã sao chép",
-      description: "Mã đã được sao chép vào clipboard.",
-    })
-  }
-
   return (
     <div
-      className="min-h-screen relative overflow-hidden 
+      className="min-h-screen relative overflow-hidden
   bg-gradient-to-b from-indigo-950 via-purple-900 to-pink-800 p-4"
     >
       <div
-        className="absolute inset-0 
+        className="absolute inset-0
     bg-[radial-gradient(circle_at_top_right,_rgba(255,255,150,0.25),_transparent_70%)]
     pointer-events-none"
       ></div>
 
       <div
-        className="absolute inset-0 
+        className="absolute inset-0
     bg-[radial-gradient(circle_at_bottom_left,_rgba(255,100,100,0.2),_transparent_70%)]
     pointer-events-none"
       ></div>
@@ -413,7 +425,7 @@ export default function OracleCodeGenerator() {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-2xl blur-sm opacity-30 animate-pulse"></div>
             <Card
-              className="relative bg-gradient-to-br from-yellow-50 via-orange-100 to-amber-200 
+              className="relative bg-gradient-to-br from-yellow-50 via-orange-100 to-amber-200
                  border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden"
             >
               <div className="absolute top-2 left-2 text-xl">🌕</div>
@@ -508,7 +520,25 @@ export default function OracleCodeGenerator() {
                           <Button onClick={handleBulkGenerate} disabled={bulkLoading} className="flex-1">
                             {bulkLoading ? `Đang sinh... ${bulkProgress}%` : "Sinh & Tải xuống"}
                           </Button>
-                          <Button variant="outline" onClick={() => setShowBulkModal(false)} disabled={bulkLoading}>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setCancelBulk(true)
+                              abortController?.abort()
+
+                              setBulkLoading(false)
+                              setBulkProgress(0)
+                              setBulkCount("")
+
+                              toast({
+                                title: "Đã hủy",
+                                description: "Quá trình sinh mã hàng loạt đã được hủy.",
+                              })
+
+                              setShowBulkModal(false)
+                              setTimeout(() => setCancelBulk(false), 100)
+                            }}
+                          >
                             Hủy
                           </Button>
                         </div>
@@ -607,7 +637,7 @@ export default function OracleCodeGenerator() {
           </div>
 
           <Card
-            className="relative bg-gradient-to-br from-yellow-100 via-orange-200 to-amber-300 
+            className="relative bg-gradient-to-br from-yellow-100 via-orange-200 to-amber-300
                  border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden"
           >
             <div className="absolute top-2 left-2 text-2xl">🌕</div>
