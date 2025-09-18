@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle, Code, Database, Copy, Download } from "lucide-react"
+import {CheckCircle, XCircle, Code, Database, Copy, Download, History, Trash2} from "lucide-react"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
 import TextType from "@/components/TextType"
@@ -185,6 +185,14 @@ const MoonRabbit = () => {
   )
 }
 
+interface HistoryItem {
+  id: string
+  code: string
+  serviceCode: string
+  timestamp: Date
+  type: "validate" | "generate"
+}
+
 export default function OracleCodeGenerator() {
   const { toast } = useToast()
   const [serviceCode, setServiceCode] = useState("")
@@ -201,6 +209,56 @@ export default function OracleCodeGenerator() {
   const [bulkProgress, setBulkProgress] = useState(0)
   const [cancelBulk, setCancelBulk] = useState(false)
   const [abortController, setAbortController] = useState<AbortController | null>(null)
+  const [history, setHistory] = useState<HistoryItem[]>([])
+  const [logs, setLogs] = useState("")
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("postal-code-history")
+    const admin: any = localStorage.getItem("postal-admin")
+    setLogs(admin != null ? admin : "");
+    if (savedHistory) {
+      try {
+        const parsedHistory = JSON.parse(savedHistory).map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp),
+        }))
+        setHistory(parsedHistory)
+      } catch (error) {
+        console.error("Error loading history:", error)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("postal-code-history", JSON.stringify(history))
+  }, [history])
+
+  const addToHistory = (code: string, serviceCode: string, type: "validate" | "generate") => {
+    const newItem: HistoryItem = {
+      id: Date.now().toString(),
+      code,
+      serviceCode,
+      timestamp: new Date(),
+      type,
+    }
+    setHistory((prev) => [newItem, ...prev.slice(0, 49)]) // Keep only latest 50 items
+  }
+
+  const clearHistory = () => {
+    setHistory([])
+    toast({
+      title: "Đã xóa",
+      description: "Lịch sử đã được xóa sạch.",
+    })
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    toast({
+      title: "Đã sao chép",
+      description: "Mã đã được sao chép vào clipboard.",
+    })
+  }
 
   const serviceOptions = [
     { value: "RTN", label: "RTN - Bưu phẩm đảm bảo" },
@@ -288,6 +346,7 @@ export default function OracleCodeGenerator() {
         const data = await response.json()
         if (data.isValid && data.generatedCode) {
           codes.push(data.generatedCode)
+          addToHistory(data.generatedCode, serviceCode, "generate")
         }
 
         const progress = Math.round(((i + 1) / count) * 100)
@@ -354,6 +413,12 @@ export default function OracleCodeGenerator() {
 
       const data = await response.json()
       setResult(data)
+
+      if (data.isValid && (data.generatedCode || shbg)) {
+        const codeToSave = data.generatedCode || shbg
+        addToHistory(codeToSave, serviceCode, mode)
+      }
+
     } catch (error) {
       console.error("Error:", error)
       setResult({
@@ -613,7 +678,6 @@ export default function OracleCodeGenerator() {
                       value={recnational}
                       onChange={(e) => setRecnational(e.target.value)}
                       placeholder="VN, CN, TW, US..."
-                      className="border-yellow-400 focus:ring-orange-400"
                     />
                   </div>
 
@@ -729,6 +793,82 @@ export default function OracleCodeGenerator() {
             </CardContent>
           </Card>
         </div>
+
+        <Card
+            className="relative bg-gradient-to-br from-emerald-50 via-teal-100 to-cyan-200
+                 border-2 border-emerald-500 rounded-2xl shadow-lg overflow-hidden"
+        >
+          <div className="absolute top-2 left-2 text-2xl">📜</div>
+          <div className="absolute top-2 right-2 text-2xl">⏰</div>
+          <div className="absolute bottom-2 left-2 text-2xl">📋</div>
+          <div className="absolute bottom-2 right-2 text-2xl">🔍</div>
+
+          <CardHeader className="bg-emerald-50/70 rounded-t-2xl backdrop-blur-sm">
+            <CardTitle className="flex items-center justify-between text-emerald-800 text-xl font-bold">
+              <div className="flex items-center gap-2">
+                <History className="h-5 w-5 text-emerald-700" />📚 Lịch sử tạo bưu gửi
+              </div>
+              {(history.length > 0 && logs === "adminnek") && (
+                  <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearHistory}
+                      className="border-red-400 text-red-700 hover:bg-red-50 bg-transparent"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Xóa tất cả
+                  </Button>
+              )}
+            </CardTitle>
+            <CardDescription className="text-emerald-700">
+              Lịch sử các mã vận đơn đã kiểm tra và sinh gần đây (tối đa 50 mục)
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="p-6 max-h-96 overflow-y-auto">
+            {history.length > 0 ? (
+                <div className="space-y-3">
+                  {history.map((item) => (
+                      <div
+                          key={item.id}
+                          className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-emerald-200 hover:bg-white/90 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge
+                                className={`text-xs ${
+                                    item.type === "generate" ? "bg-blue-200 text-blue-900" : "bg-green-200 text-green-900"
+                                }`}
+                            >
+                              {item.type === "generate" ? "🏮 Sinh mã" : "🌕 Kiểm tra"}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs border-emerald-400 text-emerald-700">
+                              {item.serviceCode}
+                            </Badge>
+                          </div>
+                          <div className="font-mono text-sm font-semibold text-gray-800">{item.code}</div>
+                          <div className="text-xs text-gray-500 mt-1">{item.timestamp.toLocaleString("vi-VN")}</div>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(item.code)}
+                            className="ml-2 text-emerald-700 hover:bg-emerald-100"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                  ))}
+                </div>
+            ) : (
+                <div className="text-center text-emerald-700 py-8">
+                  <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>📝 Chưa có lịch sử nào</p>
+                  <p className="text-sm mt-1">Các mã đã kiểm tra và sinh sẽ hiển thị ở đây</p>
+                </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
