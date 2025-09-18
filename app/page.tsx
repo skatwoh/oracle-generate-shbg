@@ -80,7 +80,8 @@ const FloatingLantern = ({ delay = 0, speed = 0.3 }: LanternProps) => {
 }
 
 // Mooncake Component
-const Mooncake = ({ x: any, y: any, rotation = 0 }) => {
+// @ts-ignore
+const Mooncake = ({ x, y, rotation = 0 }) => {
   return (
     <div
       className="absolute pointer-events-none opacity-90"
