@@ -236,7 +236,6 @@ export default function OracleCodeGenerator() {
     { value: "HCC004", label: "HCC004" },
   ]
 
-  const handleSubmit = async () => {
   const handleBulkGenerate = async () => {
     if (!serviceCode) {
       toast({
