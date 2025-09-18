@@ -1,6 +1,7 @@
 "use client"
 
-import React, {useEffect} from "react"
+import type React from "react"
+import { useEffect } from "react"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -9,10 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import {CheckCircle, XCircle, Code, Database, Copy, Download, History, Trash2} from "lucide-react"
+import { CheckCircle, XCircle, Code, Copy, Download, History, Trash2, Beer, Coffee } from "lucide-react"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
-import ElectricBorder from "@/components/ElectricBorder"
 import TextType from "@/components/TextType"
 import PetRunner from "./PetRunner"
 import {
@@ -47,7 +47,7 @@ export default function OracleCodeGenerator() {
   const { toast } = useToast()
   const [serviceCode, setServiceCode] = useState("")
   const [shbg, setShbg] = useState("")
-  const [pocode, setPocode] = useState("11022");
+  const [pocode, setPocode] = useState("11022")
   const [recnational, setRecnational] = useState("")
   const [isPackageIncident, setIsPackageIncident] = useState("0")
   const [result, setResult] = useState<ValidationResult | null>(null)
@@ -65,7 +65,7 @@ export default function OracleCodeGenerator() {
   useEffect(() => {
     const savedHistory = localStorage.getItem("postal-code-history")
     const admin: any = localStorage.getItem("postal-admin")
-    setLogs(admin != null ? admin : "");
+    setLogs(admin != null ? admin : "")
     if (savedHistory) {
       try {
         const parsedHistory = JSON.parse(savedHistory).map((item: any) => ({
@@ -208,10 +208,7 @@ export default function OracleCodeGenerator() {
         const encodedUri = encodeURI(csvContent)
         const link = document.createElement("a")
         link.setAttribute("href", encodedUri)
-        link.setAttribute(
-          "download",
-          `van-don-${serviceCode}-${new Date().toISOString().split("T")[0]}.csv`
-        )
+        link.setAttribute("download", `van-don-${serviceCode}-${new Date().toISOString().split("T")[0]}.csv`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
@@ -268,7 +265,6 @@ export default function OracleCodeGenerator() {
         const codeToSave = data.generatedCode || shbg
         addToHistory(codeToSave, serviceCode, mode)
       }
-
     } catch (error) {
       console.error("Error:", error)
       setResult({
@@ -281,57 +277,70 @@ export default function OracleCodeGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <PetRunner />
-      <Toaster />
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
-            <Database className="h-8 w-8 text-blue-600" />
-            <TextType
-              text={["Tự động sinh mã", "Kiểm tra mã vận đơn", "Hẹ Hẹ Hẹ 🤡"]}
-              typingSpeed={75}
-              pauseDuration={1500}
-              showCursor={true}
-              cursorCharacter="|"
-            />
-            <Database className="h-8 w-8 text-blue-600" />
-          </h1>
-        </div>
+      <div className="min-h-screen street-pattern bg-background p-4">
+        <PetRunner />
+        <Toaster />
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-4 py-8">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="lantern-glow rounded-full p-2">
+                <Beer className="h-10 w-10 text-primary animate-bounce" />
+              </div>
+              <span className="text-3xl">🥜</span>
+              <Coffee className="h-8 w-8 text-secondary" />
+              <span className="text-3xl">🪑</span>
+            </div>
+            <h1 className="text-4xl font-bold text-foreground font-playfair flex items-center justify-center gap-3">
+              <span className="text-primary text-5xl">🍺</span>
+              <TextType
+                  text={["Quán Bia Vỉa Hè", "Sinh Mã Vận Đơn", "Đậu Lạc & Code 🥜"]}
+                  typingSpeed={75}
+                  pauseDuration={1500}
+                  showCursor={true}
+                  cursorCharacter="|"
+              />
+              <span className="text-secondary text-4xl lantern-glow rounded-full p-1">🏮</span>
+            </h1>
+            <p className="text-lg text-muted-foreground font-source">
+              Ngồi ghế nhựa đỏ, nhâm nhi bia lạnh, sinh mã vận đơn - Đậu lạc tẩm hành cho thêm ngon! 🥜🍺🪑
+            </p>
+            <div className="flex items-center justify-center gap-4 mt-4 text-2xl">
+              <span title="Đĩa lạc">🥜</span>
+              <span title="Thuốc lào">🚬</span>
+              <span title="Ghế nhựa đỏ">🪑</span>
+              <span title="Bàn nhựa">🪑</span>
+              <span title="Đậu tẩm hành">🫘</span>
+              <span title="Bia lạnh">🧊</span>
+            </div>
+          </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <ElectricBorder
-            color="#7df9ff"
-            speed={1}
-            chaos={0.5}
-            thickness={2}
-            style={{ borderRadius: 16 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Code className="h-5 w-5" />
-                  Thông tin đầu vào
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="beer-shadow border-2 border-primary/20 bg-card/95 backdrop-blur-sm vendor-cart">
+              <CardHeader className="plastic-table rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-primary font-playfair">
+                  <Code className="h-5 w-5" />🍺 Quầy Bia Vỉa Hè
                 </CardTitle>
-                <CardDescription>
-                  Nhập thông tin để {mode === "validate" ? "kiểm tra" : "sinh mã"} vận đơn
+                <CardDescription className="text-muted-foreground">
+                  Gọi món và {mode === "validate" ? "kiểm tra" : "pha chế"} mã vận đơn - Có đậu lạc kèm theo! 🥜
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 <div className="flex gap-2 mb-4">
                   <Button
-                    variant={mode === "validate" ? "default" : "outline"}
-                    onClick={() => setMode("validate")}
-                    size="sm"
+                      variant={mode === "validate" ? "default" : "outline"}
+                      onClick={() => setMode("validate")}
+                      size="sm"
+                      className="plastic-chair-red hover:scale-105 transition-transform"
                   >
-                    Kiểm tra mã
+                    🔍 Kiểm Tra
                   </Button>
                   <Button
-                    variant={mode === "generate" ? "default" : "outline"}
-                    onClick={() => setMode("generate")}
-                    size="sm"
+                      variant={mode === "generate" ? "default" : "outline"}
+                      onClick={() => setMode("generate")}
+                      size="sm"
+                      className="peanut-brown hover:scale-105 transition-transform"
                   >
-                    Sinh mã mới
+                    ✨ Pha Mới
                   </Button>
                   <Dialog open={showBulkModal} onOpenChange={setShowBulkModal}>
                     <DialogTrigger asChild>
@@ -340,69 +349,74 @@ export default function OracleCodeGenerator() {
                         size="sm"
                         className="border-purple-400 text-purple-700 hover:bg-purple-50 bg-transparent"
                       >
-                        Nâng cao
+                        🚀 Hàng Loạt
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                          <Download className="h-5 w-5" />
-                          Sinh mã hàng loạt
+                        <DialogTitle className="flex items-center gap-2 font-playfair">
+                          <Download className="h-5 w-5" />🍺 Bia Hàng Loạt - Cả Thùng Luôn!
                         </DialogTitle>
                         <DialogDescription>
-                          Nhập số lượng mã vận đơn muốn sinh và tải xuống file Excel
+                          Gọi cả thùng bia một lúc - Nhập số lượng và tải file Excel 📊🥜
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="bulkCount">Số lượng mã cần sinh</Label>
+                          <Label htmlFor="bulkCount">Số lượng cần tạo</Label>
                           <Input
-                            id="bulkCount"
-                            type="number"
-                            min="1"
-                            max="1000"
-                            value={bulkCount}
-                            onChange={(e) => setBulkCount(e.target.value)}
-                            placeholder="Nhập số lượng (tối đa 1000)"
-                            disabled={bulkLoading}
+                              id="bulkCount"
+                              type="number"
+                              min="1"
+                              max="1000"
+                              value={bulkCount}
+                              onChange={(e) => setBulkCount(e.target.value)}
+                              placeholder="Nhập số lượng (tối đa 1000)"
+                              disabled={bulkLoading}
+                              className="border-primary/30 focus:border-primary"
                           />
                         </div>
                         {bulkLoading && (
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm text-gray-600">
-                              <span>Đang sinh mã...</span>
-                              <span>{bulkProgress}%</span>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm text-muted-foreground">
+                                <span>Đang pha chế...</span>
+                                <span>{bulkProgress}%</span>
+                              </div>
+                              <div className="w-full bg-muted rounded-full h-3">
+                                <div
+                                    className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-300 ease-out"
+                                    style={{ width: `${bulkProgress}%` }}
+                                ></div>
+                              </div>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
-                                style={{ width: `${bulkProgress}%` }}
-                              ></div>
-                            </div>
-                          </div>
                         )}
                         <div className="flex gap-2">
-                          <Button onClick={handleBulkGenerate} disabled={bulkLoading} className="flex-1">
-                            {bulkLoading ? `Đang sinh... ${bulkProgress}%` : "Sinh & Tải xuống"}
+                          <Button
+                              onClick={handleBulkGenerate}
+                              disabled={bulkLoading}
+                              className="flex-1 bg-primary hover:bg-primary/90"
+                          >
+                            {bulkLoading ? `Đang pha... ${bulkProgress}%` : "🍺 Pha & Tải"}
                           </Button>
                           <Button
-                            variant="outline"
-                            onClick={() => {
-                              setCancelBulk(true)
-                              abortController?.abort()
+                              variant="outline"
+                              onClick={() => {
+                                setCancelBulk(true)
+                                abortController?.abort()
 
-                              setBulkLoading(false)
-                              setBulkProgress(0)
-                              setBulkCount("")
+                                setBulkLoading(false)
+                                setBulkProgress(0)
+                                setBulkCount("")
 
-                              toast({
-                                title: "Đã hủy",
-                                description: "Quá trình sinh mã hàng loạt đã được hủy.",
-                              })
+                                toast({
+                                  title: "Đã hủy",
+                                  description: "Dừng pha chế hàng loạt.",
+                                })
 
-                              setShowBulkModal(false)
-                              setTimeout(() => setCancelBulk(false), 100)
-                            }}
+                                setShowBulkModal(false)
+                                setTimeout(() => setCancelBulk(false), 100)
+                              }}
+                              className="border-destructive text-destructive hover:bg-destructive/10"
                           >
                             Hủy
                           </Button>
@@ -414,67 +428,72 @@ export default function OracleCodeGenerator() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="serviceCode">Service Code <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="serviceCode" className="text-foreground font-semibold">
+                      🏷️ Loại Dịch Vụ <span className="text-destructive">*</span>
+                    </Label>
                     <Select value={serviceCode} onValueChange={setServiceCode} required>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn loại dịch vụ" />
+                      <SelectTrigger className="border-primary/30 focus:border-primary">
+                        <SelectValue placeholder="Chọn loại như chọn bia" />
                       </SelectTrigger>
                       <SelectContent>
                         {serviceOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {/* <Input
-                    id="serviceCode"
-                    onChange={(e) => setServiceCode(e.target.value)}
-                    placeholder="Chọn hoặc nhập mã dịch vụ"
-                    className="mt-2"
-                  /> */}
                   </div>
 
                   {mode === "validate" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="shbg">
-                        Mã vận đơn (SHBG) <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="shbg"
-                        value={shbg}
-                        onChange={(e) => setShbg(e.target.value.toUpperCase())}
-                        placeholder="Nhập mã vận đơn cần kiểm tra"
-                        required
-                      />
-                    </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="shbg" className="text-foreground font-semibold">
+                          📦 Mã Vận Đơn (SHBG) <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="shbg"
+                            value={shbg}
+                            onChange={(e) => setShbg(e.target.value.toUpperCase())}
+                            placeholder="Nhập mã cần kiểm tra"
+                            required
+                            className="border-primary/30 focus:border-primary"
+                        />
+                      </div>
                   )}
 
                   <div className="space-y-2">
-                    <Label htmlFor="pocode">Mã bưu cục (PO Code) <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="pocode" className="text-foreground font-semibold">
+                      🏪 Mã Bưu Cục <span className="text-destructive">*</span>
+                    </Label>
                     <Input
-                      id="pocode"
-                      value={pocode}
-                      onChange={(e) => setPocode(e.target.value)}
-                      placeholder="Mã bưu cục (tùy chọn)"
-                      required
+                        id="pocode"
+                        value={pocode}
+                        onChange={(e) => setPocode(e.target.value)}
+                        placeholder="Mã bưu cục"
+                        required
+                        className="border-primary/30 focus:border-primary"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="recnational">Quốc gia nhận</Label>
+                    <Label htmlFor="recnational" className="text-foreground font-semibold">
+                      🌏 Quốc Gia
+                    </Label>
                     <Input
-                      id="recnational"
-                      value={"VN"}
-                      onChange={(e) => setRecnational("VN")}
-                      placeholder="VN, CN, TW, US..."
+                        id="recnational"
+                        value={"VN"}
+                        onChange={(e) => setRecnational("VN")}
+                        placeholder="VN, CN, TW, US..."
+                        className="border-primary/30 focus:border-primary"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="isPackageIncident">Bưu gửi sự vụ</Label>
+                    <Label htmlFor="isPackageIncident" className="text-foreground font-semibold">
+                      ⚠️ Bưu Gửi Sự Vụ
+                    </Label>
                     <Select value={isPackageIncident} onValueChange={setIsPackageIncident}>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-primary/30 focus:border-primary">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -484,171 +503,193 @@ export default function OracleCodeGenerator() {
                     </Select>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Đang xử lý..." : mode === "validate" ? "Kiểm tra mã" : "Sinh mã mới"}
+                  <Button
+                      type="submit"
+                      className="w-full font-semibold"
+                      disabled={loading}
+                  >
+                    {loading ? "Đang pha chế... 🍺" : mode === "validate" ? "🔍 Kiểm Tra Ngay" : "✨ Tạo Mã Mới"}
                   </Button>
                 </form>
               </CardContent>
             </Card>
-          </ElectricBorder>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Kết quả</CardTitle>
-              <CardDescription>
-                Kết quả {mode === "validate" ? "kiểm tra" : "sinh mã"} sẽ hiển thị ở đây
+            <Card className="beer-shadow border-2 border-secondary/20 bg-card/95 backdrop-blur-sm plastic-table">
+              <CardHeader className="lantern-glow rounded-t-lg backdrop-blur-sm">
+                <CardTitle className="text-secondary font-playfair">🎯 Kết Quả - Món Đã Pha</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Ly bia (mã vận đơn) đã {mode === "validate" ? "kiểm tra" : "pha chế"} xong rồi đây! 🍺
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {result ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        {result.isValid ? (
+                            <CheckCircle className="h-6 w-6 text-green-500" />
+                        ) : (
+                            <XCircle className="h-6 w-6 text-destructive" />
+                        )}
+                        <Badge
+                            variant={result.isValid ? "default" : "destructive"}
+                            className={result.isValid ? "bg-green-500 hover:bg-green-600" : ""}
+                        >
+                          {result.isValid ? "✅ Ngon Lành" : "❌ Có Vấn Đề"}
+                        </Badge>
+                      </div>
+
+                      {result.generatedCode && (
+                          <div className="space-y-2">
+                            <Label className="text-foreground font-semibold">🎫 Mã Vừa Tạo:</Label>
+                            <div className="p-4 bg-primary/10 border-2 border-primary/30 rounded-lg font-mono text-lg flex items-center justify-between">
+                              <span className="text-primary font-bold">{result.generatedCode}</span>
+                              <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(result.generatedCode || "")
+                                    toast({
+                                      title: "🍺 Đã Copy!",
+                                      description: "Mã đã sao chép - Uống bia thôi!",
+                                    })
+                                  }}
+                                  className="ml-4 text-primary hover:text-primary/80 transition-colors"
+                              >
+                                <Copy className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
+                      )}
+
+                      {result.serviceInfo && (
+                          <div className="space-y-2">
+                            <Label className="text-foreground font-semibold">📋 Thông Tin Dịch Vụ:</Label>
+                            <div className="p-4 bg-secondary/10 border-2 border-secondary/30 rounded-lg space-y-2">
+                              <div>
+                                <strong>Tên:</strong> {result.serviceInfo.name}
+                              </div>
+                              <div>
+                                <strong>Tiền tố:</strong> {result.serviceInfo.prefix}
+                              </div>
+                              <div>
+                                <strong>Định dạng:</strong> {result.serviceInfo.format}
+                              </div>
+                            </div>
+                          </div>
+                      )}
+
+                      {result.errors && result.errors.length > 0 && (
+                          <div className="space-y-2">
+                            <Label className="text-destructive font-semibold">⚠️ Lỗi:</Label>
+                            <div className="p-4 bg-destructive/10 border-2 border-destructive/30 rounded-lg">
+                              {result.errors.map((error, index) => (
+                                  <div key={index} className="text-destructive">
+                                    • {error}
+                                  </div>
+                              ))}
+                            </div>
+                          </div>
+                      )}
+                    </div>
+                ) : (
+                    <div className="text-center text-muted-foreground py-12">
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <Beer className="h-16 w-16 text-primary/50" />
+                        <span className="text-4xl opacity-30">🥜</span>
+                        <span className="text-4xl opacity-30">🪑</span>
+                      </div>
+                      <p className="text-lg font-playfair">🍺 Quán còn trống - Chưa có ai ngồi</p>
+                      <p className="text-sm mt-2">Tạo mã đầu tiên để mở quán bia vỉa hè! Có đậu lạc tẩm hành đấy! 🥜</p>
+                    </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="beer-shadow border-2 border-accent/20 vendor-cart backdrop-blur-sm relative overflow-hidden">
+            <div className="absolute top-3 left-3 text-3xl lantern-glow rounded-full p-1">🍺</div>
+            <div className="absolute top-3 right-3 text-3xl lantern-glow rounded-full p-1">🏮</div>
+            <div className="absolute bottom-3 left-3 text-3xl">🥜</div>
+            <div className="absolute bottom-3 right-3 text-3xl">🪑</div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl opacity-5">
+              🫘
+            </div>
+
+            <CardHeader className="plastic-table rounded-t-lg backdrop-blur-sm relative z-10">
+              <CardTitle className="flex items-center justify-between text-accent font-playfair text-xl">
+                <div className="flex items-center gap-2">
+                  <History className="h-6 w-6" />🍻 Sổ Quán Bia Vỉa Hè
+                </div>
+                {history.length > 0 && logs === "adminnek" && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearHistory}
+                        className="plastic-chair-red hover:scale-105 transition-transform bg-transparent"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Dọn Bàn
+                    </Button>
+                )}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Những ly bia (mã vận đơn) đã nhâm nhi - Kèm đậu lạc tẩm hành! 🥜🍺 (Tối đa 50 ly)
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              {result ? (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    {result.isValid ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircle className="h-5 w-5 text-red-500" />
-                    )}
-                    <Badge variant={result.isValid ? "default" : "destructive"}>
-                      {result.isValid ? "Hợp lệ" : "Không hợp lệ"}
-                    </Badge>
-                  </div>
 
-                  {result.generatedCode && (
-                    <div className="space-y-2">
-                      <Label>Mã được sinh:</Label>
-                      <div className="p-3 bg-gray-100 rounded-md font-mono text-lg flex items-center justify-between">
-                        <span>{result.generatedCode}</span>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(result.generatedCode || "")
-                            toast({
-                              title: "Đã sao chép",
-                              description: "Mã đã được sao chép vào clipboard.",
-                            })
-                          }}
-                          className="ml-4 text-sm text-blue-600 hover:underline"
+            <CardContent className="p-6 max-h-96 overflow-y-auto relative z-10">
+              {history.length > 0 ? (
+                  <div className="space-y-3">
+                    {history.map((item) => (
+                        <div
+                            key={item.id}
+                            className="flex items-center justify-between p-4 plastic-table rounded-lg border-2 border-primary/20 hover:border-primary/40 hover:lantern-glow transition-all duration-200"
                         >
-                          <Copy />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {result.serviceInfo && (
-                    <div className="space-y-2">
-                      <Label>Thông tin dịch vụ:</Label>
-                      <div className="p-3 bg-blue-50 rounded-md space-y-1">
-                        <div>
-                          <strong>Tên:</strong> {result.serviceInfo.name}
-                        </div>
-                        <div>
-                          <strong>Tiền tố:</strong> {result.serviceInfo.prefix}
-                        </div>
-                        <div>
-                          <strong>Định dạng:</strong> {result.serviceInfo.format}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {result.errors && result.errors.length > 0 && (
-                    <div className="space-y-2">
-                      <Label>Lỗi:</Label>
-                      <div className="p-3 bg-red-50 rounded-md">
-                        {result.errors.map((error, index) => (
-                          <div key={index} className="text-red-700">
-                            • {error}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge
+                                  className={`text-xs font-semibold ${
+                                      item.type === "generate"
+                                          ? "peanut-brown border-amber-600"
+                                          : "plastic-chair-red border-red-600"
+                                  }`}
+                              >
+                                {item.type === "generate" ? "🍺 Pha Mới" : "🔍 Kiểm Tra"}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs tobacco-leaf">
+                                {item.serviceCode}
+                              </Badge>
+                            </div>
+                            <div className="font-mono text-sm font-bold text-foreground bg-muted/50 px-2 py-1 rounded">
+                              {item.code}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-2">
+                              🕐 {item.timestamp.toLocaleString("vi-VN")}
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                          <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(item.code)}
+                              className="ml-3 text-primary hover:bg-primary/10 hover:text-primary"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                    ))}
+                  </div>
               ) : (
-                <div className="text-center text-gray-500 py-8">
-                  {mode === "validate" ? "Nhập mã vận đơn để kiểm tra tính hợp lệ" : "Chọn dịch vụ để sinh mã mới"}
-                </div>
+                  <div className="text-center text-muted-foreground py-12">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <Beer className="h-16 w-16 text-primary/30" />
+                      <span className="text-4xl opacity-30">🥜</span>
+                      <span className="text-4xl opacity-30">🪑</span>
+                    </div>
+                    <p className="text-lg font-playfair">🍺 Quán còn trống - Chưa có ai ngồi</p>
+                    <p className="text-sm mt-2">Tạo mã đầu tiên để mở quán bia vỉa hè! Có đậu lạc tẩm hành đấy! 🥜</p>
+                  </div>
               )}
             </CardContent>
           </Card>
         </div>
-
-        <Card
-            className="relative bg-gradient-to-br from-emerald-50 via-teal-100 to-cyan-200
-                 border-2 border-emerald-500 rounded-2xl shadow-lg overflow-hidden"
-        >
-          <div className="absolute top-2 left-2 text-2xl">📜</div>
-          <div className="absolute top-2 right-2 text-2xl">⏰</div>
-          <div className="absolute bottom-2 left-2 text-2xl">📋</div>
-          <div className="absolute bottom-2 right-2 text-2xl">🔍</div>
-
-          <CardHeader className="bg-emerald-50/70 rounded-t-2xl backdrop-blur-sm">
-            <CardTitle className="flex items-center justify-between text-emerald-800 text-xl font-bold">
-              <div className="flex items-center gap-2">
-                <History className="h-5 w-5 text-emerald-700" />📚 Lịch sử tạo bưu gửi
-              </div>
-              {(history.length > 0 && logs === "adminnek") && (
-                  <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={clearHistory}
-                      className="border-red-400 text-red-700 hover:bg-red-50 bg-transparent"
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Xóa tất cả
-                  </Button>
-              )}
-            </CardTitle>
-            <CardDescription className="text-emerald-700">
-              Lịch sử các mã vận đơn đã kiểm tra và sinh gần đây (tối đa 50 mục)
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="p-6 max-h-96 overflow-y-auto">
-            {history.length > 0 ? (
-                <div className="space-y-3">
-                  {history.map((item) => (
-                      <div
-                          key={item.id}
-                          className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-emerald-200 hover:bg-white/90 transition-colors"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge
-                                className={`text-xs ${
-                                    item.type === "generate" ? "bg-blue-200 text-blue-900" : "bg-green-200 text-green-900"
-                                }`}
-                            >
-                              {item.type === "generate" ? "🏮 Sinh mã" : "🌕 Kiểm tra"}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs border-emerald-400 text-emerald-700">
-                              {item.serviceCode}
-                            </Badge>
-                          </div>
-                          <div className="font-mono text-sm font-semibold text-gray-800">{item.code}</div>
-                          <div className="text-xs text-gray-500 mt-1">{item.timestamp.toLocaleString("vi-VN")}</div>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(item.code)}
-                            className="ml-2 text-emerald-700 hover:bg-emerald-100"
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                  ))}
-                </div>
-            ) : (
-                <div className="text-center text-emerald-700 py-8">
-                  <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>📝 Chưa có lịch sử nào</p>
-                  <p className="text-sm mt-1">Các mã đã kiểm tra và sinh sẽ hiển thị ở đây</p>
-                </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
-    </div>
   )
 }

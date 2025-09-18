@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image";
 
 export default function PetRunner() {
   const [position, setPosition] = useState(0)
@@ -26,19 +27,19 @@ export default function PetRunner() {
   }, [direction])
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: "20px",
-        left: position,
-        fontSize: "50px",
-        transform: direction === -1 ? "scaleX(-1)" : "scaleX(1)",
-        transition: "transform 0.3s",
-        pointerEvents: "none",
-        zIndex: 9999,
-      }}
-    >
-      🐕 🐕 🐕
-    </div>
+      <div
+          className="fixed bottom-5 flex gap-2 pointer-events-none z-[9999]"
+          style={{
+              left: position,
+              fontSize: "50px",
+              transform: direction === -1 ? "scaleX(-1)" : "scaleX(1)",
+              transition: "transform 0.3s",
+          }}
+      >
+          <Image src="./image/bia.png" alt="bia" width={100} height={80}/>
+          <Image src="./image/dau.png" alt="bia" width={100} height={80}/>
+          <Image src="./image/bia.png" alt="bia" width={100} height={80}/>
+      </div>
+
   )
 }
