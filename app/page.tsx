@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +7,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle, Code, Database, Copy } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { CheckCircle, XCircle, Code, Database, Copy, Download } from "lucide-react"
 import Image from "next/image"
 import PetRunner from "./PetRunner"
 import { Toaster } from "@/components/ui/toaster"
@@ -35,13 +41,13 @@ interface LanternProps {
 
 const FloatingLantern = ({ delay = 0, speed = 0.3 }: LanternProps) => {
   const [position, setPosition] = useState<{ x: number; y: number }>({
-    x: Math.random() * 100,   // %
-    y: 100 + Math.random() * 20 // bắt đầu từ dưới cùng màn hình (%)
+    x: Math.random() * 100, // %
+    y: 100 + Math.random() * 20, // bắt đầu từ dưới cùng màn hình (%)
   })
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPosition(prev => {
+      setPosition((prev) => {
         let newY = prev.y - speed
         let newX = prev.x + Math.sin(Date.now() / 2000 + delay) * 0.2
 
@@ -64,16 +70,10 @@ const FloatingLantern = ({ delay = 0, speed = 0.3 }: LanternProps) => {
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: `translate(-50%, -50%)`
+        transform: `translate(-50%, -50%)`,
       }}
     >
-      <Image
-        src="/images/long-den.png"
-        alt="Lantern"
-        width={60}
-        height={60}
-        className="object-contain"
-      />
+      <Image src="/images/long-den.png" alt="Lantern" width={60} height={60} className="object-contain" />
     </div>
   )
 }
@@ -89,20 +89,16 @@ const Mooncake = ({ x, y, rotation = 0 }) => {
         transform: `rotate(${rotation}deg)`,
       }}
     >
-      <Image
-        src="/images/moon-cake.png"
-        alt="Mooncake"
-        width={100}
-        height={100}
-        className="object-contain"
-      />
+      <Image src="/images/moon-cake.png" alt="Mooncake" width={100} height={100} className="object-contain" />
     </div>
   )
 }
 
 // Stars Component
 const StarField = () => {
-  const [stars, setStars] = useState<Array<{ x: number; y: number; size: number; opacity: number; twinkle: number }>>([])
+  const [stars, setStars] = useState<Array<{ x: number; y: number; size: number; opacity: number; twinkle: number }>>(
+    [],
+  )
 
   useEffect(() => {
     const generateStars = () => {
@@ -111,7 +107,7 @@ const StarField = () => {
         y: Math.random() * 60,
         size: Math.random() * 3 + 1,
         opacity: Math.random() * 0.8 + 0.2,
-        twinkle: Math.random() * 2000 + 1000
+        twinkle: Math.random() * 2000 + 1000,
       }))
       setStars(newStars)
     }
@@ -132,7 +128,7 @@ const StarField = () => {
             height: `${star.size}px`,
             opacity: star.opacity,
             animationDuration: `${star.twinkle}ms`,
-            boxShadow: '0 0 4px rgba(255, 255, 255, 0.8)'
+            boxShadow: "0 0 4px rgba(255, 255, 255, 0.8)",
           }}
         />
       ))}
@@ -146,7 +142,7 @@ const MidAutumnMoon = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setGlowIntensity(prev => 0.7 + Math.sin(Date.now() / 2000) * 0.3)
+      setGlowIntensity((prev) => 0.7 + Math.sin(Date.now() / 2000) * 0.3)
     }, 100)
 
     return () => clearInterval(interval)
@@ -157,7 +153,7 @@ const MidAutumnMoon = () => {
       <div
         className="w-20 h-20 bg-gradient-to-br from-yellow-200 via-yellow-300 to-orange-200 rounded-full relative"
         style={{
-          boxShadow: `0 0 ${30 * glowIntensity}px rgba(255, 255, 0, ${0.4 * glowIntensity})`
+          boxShadow: `0 0 ${30 * glowIntensity}px rgba(255, 255, 0, ${0.4 * glowIntensity})`,
         }}
       >
         <div className="absolute top-3 left-4 w-3 h-3 bg-yellow-400/30 rounded-full"></div>
@@ -167,11 +163,11 @@ const MidAutumnMoon = () => {
 
         <div
           className="absolute inset-0 rounded-full border border-yellow-200/20"
-          style={{ transform: 'scale(1.2)' }}
+          style={{ transform: "scale(1.2)" }}
         ></div>
         <div
           className="absolute inset-0 rounded-full border border-yellow-200/10"
-          style={{ transform: 'scale(1.4)' }}
+          style={{ transform: "scale(1.4)" }}
         ></div>
       </div>
     </div>
@@ -182,17 +178,10 @@ const MidAutumnMoon = () => {
 const MoonRabbit = () => {
   return (
     <div className="absolute top-12 left-8 pointer-events-none opacity-80">
-      <Image
-        src="/images/moon-rabbit.png"
-        alt="Moon Rabbit"
-        width={80}
-        height={80}
-        className="object-contain"
-      />
+      <Image src="/images/moon-rabbit.png" alt="Moon Rabbit" width={80} height={80} className="object-contain" />
     </div>
   )
 }
-
 
 export default function OracleCodeGenerator() {
   const { toast } = useToast()
@@ -204,6 +193,10 @@ export default function OracleCodeGenerator() {
   const [result, setResult] = useState<ValidationResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<"validate" | "generate">("validate")
+
+  const [showBulkModal, setShowBulkModal] = useState(false)
+  const [bulkCount, setBulkCount] = useState("")
+  const [bulkLoading, setBulkLoading] = useState(false)
 
   const serviceOptions = [
     { value: "RTN", label: "RTN - Bưu phẩm đảm bảo" },
@@ -272,6 +265,81 @@ export default function OracleCodeGenerator() {
     }
   }
 
+  const handleBulkGenerate = async () => {
+    if (!serviceCode) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn Service Code trước.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!bulkCount || Number.parseInt(bulkCount) <= 0) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập số lượng hợp lệ.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setBulkLoading(true)
+
+    try {
+      const count = Number.parseInt(bulkCount)
+      const codes = []
+
+      // Generate multiple codes
+      for (let i = 0; i < count; i++) {
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            serviceCode,
+            pocode,
+            recnational,
+            isPackageIncident,
+          }),
+        })
+
+        const data = await response.json()
+        if (data.isValid && data.generatedCode) {
+          codes.push(data.generatedCode)
+        }
+      }
+
+      const csvContent = "data:text/csv;charset=utf-8," + codes.join("\n")
+
+      const encodedUri = encodeURI(csvContent)
+      const link = document.createElement("a")
+      link.setAttribute("href", encodedUri)
+      link.setAttribute("download", `van-don-${serviceCode}-${new Date().toISOString().split("T")[0]}.csv`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      toast({
+        title: "Thành công",
+        description: `Đã sinh ${codes.length} mã vận đơn và tải xuống file Excel.`,
+      })
+
+      setShowBulkModal(false)
+      setBulkCount("")
+    } catch (error) {
+      console.error("Error:", error)
+      toast({
+        title: "Lỗi",
+        description: "Có lỗi xảy ra khi sinh mã hàng loạt.",
+        variant: "destructive",
+      })
+    } finally {
+      setBulkLoading(false)
+    }
+  }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     toast({
@@ -281,18 +349,23 @@ export default function OracleCodeGenerator() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden 
-  bg-gradient-to-b from-indigo-950 via-purple-900 to-pink-800 p-4">
-
+    <div
+      className="min-h-screen relative overflow-hidden 
+  bg-gradient-to-b from-indigo-950 via-purple-900 to-pink-800 p-4"
+    >
       {/* ánh sáng trăng vàng ở góc phải */}
-      <div className="absolute inset-0 
+      <div
+        className="absolute inset-0 
     bg-[radial-gradient(circle_at_top_right,_rgba(255,255,150,0.25),_transparent_70%)]
-    pointer-events-none"></div>
+    pointer-events-none"
+      ></div>
 
       {/* ánh đỏ đèn lồng phía dưới */}
-      <div className="absolute inset-0 
+      <div
+        className="absolute inset-0 
     bg-[radial-gradient(circle_at_bottom_left,_rgba(255,100,100,0.2),_transparent_70%)]
-    pointer-events-none"></div>
+    pointer-events-none"
+      ></div>
 
       <Toaster />
       {/* Mid-Autumn Festival Decorations */}
@@ -304,11 +377,7 @@ export default function OracleCodeGenerator() {
 
       {/* Floating Lanterns */}
       {Array.from({ length: 20 }).map((_, i) => (
-        <FloatingLantern
-          key={i}
-          delay={i * 0.5}
-          speed={0.5 + Math.random() * 0.5}
-        />
+        <FloatingLantern key={i} delay={i * 0.5} speed={0.5 + Math.random() * 0.5} />
       ))}
 
       {/* Mooncakes */}
@@ -345,8 +414,10 @@ export default function OracleCodeGenerator() {
           {/* Left Card with Electric Border Effect */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-2xl blur-sm opacity-30 animate-pulse"></div>
-            <Card className="relative bg-gradient-to-br from-yellow-50 via-orange-100 to-amber-200 
-                 border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden">
+            <Card
+              className="relative bg-gradient-to-br from-yellow-50 via-orange-100 to-amber-200 
+                 border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden"
+            >
               {/* Icon trang trí góc */}
               <div className="absolute top-2 left-2 text-xl">🌕</div>
               <div className="absolute top-2 right-2 text-xl">🏮</div>
@@ -355,8 +426,7 @@ export default function OracleCodeGenerator() {
 
               <CardHeader className="bg-amber-50/70 rounded-t-2xl backdrop-blur-sm">
                 <CardTitle className="flex items-center gap-2 text-orange-900 font-bold">
-                  <Code className="h-5 w-5 text-orange-700" />
-                  🎑 Thông tin đầu vào
+                  <Code className="h-5 w-5 text-orange-700" />🎑 Thông tin đầu vào
                 </CardTitle>
                 <CardDescription className="text-orange-700">
                   Nhập thông tin để {mode === "validate" ? "kiểm tra" : "sinh mã"} vận đơn
@@ -369,10 +439,11 @@ export default function OracleCodeGenerator() {
                     variant={mode === "validate" ? "default" : "outline"}
                     onClick={() => setMode("validate")}
                     size="sm"
-                    className={`${mode === "validate"
-                      ? "bg-orange-500 hover:bg-orange-600 text-white"
-                      : "border-orange-400 text-orange-700 hover:bg-orange-50"
-                      }`}
+                    className={`${
+                      mode === "validate"
+                        ? "bg-orange-500 hover:bg-orange-600 text-white"
+                        : "border-orange-400 text-orange-700 hover:bg-orange-50"
+                    }`}
                   >
                     Kiểm tra mã
                   </Button>
@@ -380,13 +451,58 @@ export default function OracleCodeGenerator() {
                     variant={mode === "generate" ? "default" : "outline"}
                     onClick={() => setMode("generate")}
                     size="sm"
-                    className={`${mode === "generate"
-                      ? "bg-orange-500 hover:bg-orange-600 text-white"
-                      : "border-orange-400 text-orange-700 hover:bg-orange-50"
-                      }`}
+                    className={`${
+                      mode === "generate"
+                        ? "bg-orange-500 hover:bg-orange-600 text-white"
+                        : "border-orange-400 text-orange-700 hover:bg-orange-50"
+                    }`}
                   >
                     Sinh mã mới
                   </Button>
+                  <Dialog open={showBulkModal} onOpenChange={setShowBulkModal}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-purple-400 text-purple-700 hover:bg-purple-50 bg-transparent"
+                      >
+                        Nâng cao
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <Download className="h-5 w-5" />
+                          Sinh mã hàng loạt
+                        </DialogTitle>
+                        <DialogDescription>
+                          Nhập số lượng mã vận đơn muốn sinh và tải xuống file Excel
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="bulkCount">Số lượng mã cần sinh</Label>
+                          <Input
+                            id="bulkCount"
+                            type="number"
+                            min="1"
+                            max="1000"
+                            value={bulkCount}
+                            onChange={(e) => setBulkCount(e.target.value)}
+                            placeholder="Nhập số lượng (tối đa 1000)"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={handleBulkGenerate} disabled={bulkLoading} className="flex-1">
+                            {bulkLoading ? "Đang sinh..." : "Sinh & Tải xuống"}
+                          </Button>
+                          <Button variant="outline" onClick={() => setShowBulkModal(false)}>
+                            Hủy
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 <div className="space-y-4">
@@ -476,11 +592,12 @@ export default function OracleCodeGenerator() {
                 </div>
               </CardContent>
             </Card>
-
           </div>
 
-          <Card className="relative bg-gradient-to-br from-yellow-100 via-orange-200 to-amber-300 
-                 border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden">
+          <Card
+            className="relative bg-gradient-to-br from-yellow-100 via-orange-200 to-amber-300 
+                 border-2 border-yellow-500 rounded-2xl shadow-lg overflow-hidden"
+          >
             {/* trang trí góc bằng emoji / icon */}
             <div className="absolute top-2 left-2 text-2xl">🌕</div>
             <div className="absolute top-2 right-2 text-2xl">🏮</div>
@@ -503,12 +620,7 @@ export default function OracleCodeGenerator() {
                     ) : (
                       <XCircle className="h-5 w-5 text-red-600" />
                     )}
-                    <Badge
-                      className={`${result.isValid
-                        ? "bg-green-200 text-green-900"
-                        : "bg-red-200 text-red-900"
-                        }`}
-                    >
+                    <Badge className={`${result.isValid ? "bg-green-200 text-green-900" : "bg-red-200 text-red-900"}`}>
                       {result.isValid ? "Hợp lệ" : "Không hợp lệ"}
                     </Badge>
                   </div>
@@ -567,7 +679,6 @@ export default function OracleCodeGenerator() {
               )}
             </CardContent>
           </Card>
-
         </div>
       </div>
     </div>
