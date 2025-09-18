@@ -80,7 +80,7 @@ const FloatingLantern = ({ delay = 0, speed = 0.3 }: LanternProps) => {
 }
 
 // Mooncake Component
-const Mooncake = ({ x, y, rotation = 0 }) => {
+const Mooncake = ({ x: any, y: any, rotation = 0 }) => {
   return (
     <div
       className="absolute pointer-events-none opacity-90"
@@ -362,6 +362,14 @@ export default function OracleCodeGenerator() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    toast({
+      title: "Đã sao chép",
+      description: "Mã đã được sao chép vào clipboard.",
+    })
   }
 
   return (
