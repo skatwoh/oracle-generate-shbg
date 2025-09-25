@@ -2,85 +2,185 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Vietnamese street beer style fonts */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap");
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Add Vietnamese street beer style utilities */
+  .font-playfair {
+    font-family: "Playfair Display", serif;
+  }
+
+  .font-source {
+    font-family: "Source Sans Pro", sans-serif;
+  }
+
+  .beer-shadow {
+    box-shadow: 0 4px 20px rgba(217, 119, 6, 0.15);
+  }
+
+  .street-pattern {
+    /* Adding Vietnamese street elements pattern */
+    background-image: radial-gradient(circle at 10% 20%, rgba(217, 119, 6, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 80% 80%, rgba(230, 57, 70, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 40% 40%, rgba(251, 191, 36, 0.05) 0%, transparent 25%), /* Plastic chair pattern */
+    linear-gradient(45deg, rgba(230, 57, 70, 0.03) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(230, 57, 70, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(217, 119, 6, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(217, 119, 6, 0.03) 75%);
+    background-size: 200px 200px, 150px 150px, 100px 100px, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
+    background-position: 0 0, 100px 100px, 50px 50px, 0 0, 10px 10px, 0 10px, 10px 0;
+  }
+
+  /* Adding plastic chair and table effects */
+  .plastic-chair-red {
+    background: linear-gradient(135deg, #e63946 0%, #dc2626 100%);
+    box-shadow: 0 4px 8px rgba(230, 57, 70, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .plastic-table {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  /* Adding peanut and snack colors */
+  .peanut-brown {
+    background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
+    color: #fef3c7;
+  }
+
+  .tobacco-leaf {
+    background: linear-gradient(135deg, #365314 0%, #1a2e05 100%);
+    color: #d9f99d;
+  }
+
+  /* Adding Vietnamese lantern glow effect */
+  .lantern-glow {
+    box-shadow: 0 0 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(230, 57, 70, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: lantern-flicker 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes lantern-flicker {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(230, 57, 70, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 25px rgba(230, 57, 70, 0.5), 0 0 50px rgba(230, 57, 70, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  /* Adding street food vendor cart effect */
+  .vendor-cart {
+    background: image(url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fvi%2Fanh%2Fn%25E1%25BB%2581n-bia-gm171342737-21546340&psig=AOvVaw15EV2a-p37Kj-s1Hv_DC1K&ust=1758274519335000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCICq0JOB4o8DFQAAAAAdAAAAABAK"));
+    border: 2px solid #d97706;
+    position: relative;
+  }
+
+  .vendor-cart::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: image("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fvi%2Fanh%2Fn%25E1%25BB%2581n-bia-gm171342737-21546340&psig=AOvVaw15EV2a-p37Kj-s1Hv_DC1K&ust=1758274519335000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCICq0JOB4o8DFQAAAAAdAAAAABAK");
+    border-radius: inherit;
+    z-index: -1;
+    animation: vendor-border 4s linear infinite;
+  }
+
+  @keyframes vendor-border {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Vietnamese street beer color palette */
+    --background: 48 96% 89%; /* #fefce8 - warm cream background */
+    --foreground: 220 13% 26%; /* #374151 - dark gray text */
+    --card: 0 0% 100%; /* #ffffff - clean white cards */
+    --card-foreground: 220 13% 26%; /* #374151 - card text */
+    --popover: 0 0% 100%; /* #ffffff - popover background */
+    --popover-foreground: 220 13% 26%; /* #374151 - popover text */
+    --primary: 32 95% 44%; /* #d97706 - amber primary (beer color) */
+    --primary-foreground: 0 0% 100%; /* #ffffff - text on primary */
+    --secondary: 354 70% 54%; /* #e63946 - vibrant red accent */
+    --secondary-foreground: 0 0% 100%; /* #ffffff - text on secondary */
+    --muted: 120 60% 97%; /* #f0fdf4 - light green muted */
+    --muted-foreground: 220 13% 26%; /* #374151 - muted text */
+    --accent: 354 70% 54%; /* #e63946 - red highlights */
+    --accent-foreground: 0 0% 100%; /* #ffffff - text on accent */
+    --destructive: 0 100% 63%; /* #ff4d4d - warning red */
+    --destructive-foreground: 0 0% 100%; /* #ffffff - text on destructive */
+    --border: 220 13% 82%; /* #d1d5db - light gray borders */
+    --input: 0 0% 100%; /* #ffffff - input backgrounds */
+    --ring: 32 95% 44%; /* #d97706 - focus ring color */
+    --chart-1: 32 95% 44%; /* #d97706 - chart colors */
+    --chart-2: 354 70% 54%; /* #e63946 */
+    --chart-3: 45 93% 58%; /* #fbbf24 */
+    --chart-4: 43 96% 56%; /* #f59e0b */
+    --chart-5: 348 83% 47%; /* #f43f5e */
+    --radius: 0.75rem; /* Slightly more rounded for friendlier feel */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 13% 26%;
+    --sidebar-primary: 32 95% 44%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 354 70% 54%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 13% 82%;
+    --sidebar-ring: 32 95% 44%;
+  }
+
+  .dark {
+    /* Dark mode with warmer tones for evening beer sessions */
+    --background: 24 10% 10%; /* #1a1612 - warm dark background */
+    --foreground: 48 96% 89%; /* #fefce8 - warm light text */
+    --card: 24 10% 15%; /* #262017 - warm dark cards */
+    --card-foreground: 48 96% 89%; /* #fefce8 - card text */
+    --popover: 24 10% 15%; /* #262017 - popover background */
+    --popover-foreground: 48 96% 89%; /* #fefce8 - popover text */
+    --primary: 32 95% 44%; /* #d97706 - keep beer amber */
+    --primary-foreground: 0 0% 100%; /* #ffffff - text on primary */
+    --secondary: 354 70% 54%; /* #e63946 - keep vibrant red */
+    --secondary-foreground: 0 0% 100%; /* #ffffff - text on secondary */
+    --muted: 24 10% 20%; /* #2d2419 - warm muted */
+    --muted-foreground: 48 50% 70%; /* #c7b299 - warm muted text */
+    --accent: 354 70% 54%; /* #e63946 - red highlights */
+    --accent-foreground: 0 0% 100%; /* #ffffff - text on accent */
+    --destructive: 0 100% 63%; /* #ff4d4d - warning red */
+    --destructive-foreground: 0 0% 100%; /* #ffffff - text on destructive */
+    --border: 24 10% 25%; /* #33291f - warm borders */
+    --input: 24 10% 20%; /* #2d2419 - input backgrounds */
+    --ring: 32 95% 44%; /* #d97706 - focus ring */
+    --chart-1: 32 95% 44%;
+    --chart-2: 354 70% 54%;
+    --chart-3: 45 93% 58%;
+    --chart-4: 43 96% 56%;
+    --chart-5: 348 83% 47%;
+    --sidebar-background: 24 10% 15%;
+    --sidebar-foreground: 48 96% 89%;
+    --sidebar-primary: 32 95% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 354 70% 54%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 24 10% 25%;
+    --sidebar-ring: 32 95% 44%;
   }
 }
 
@@ -89,6 +189,16 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-source;
+  }
+
+  /* Add Vietnamese street beer style base styles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-playfair;
   }
 }
