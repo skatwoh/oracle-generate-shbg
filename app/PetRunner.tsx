@@ -40,6 +40,5 @@ export default function PetRunner() {
           <Image src="./image/dau.png" alt="bia" width={100} height={80}/>
           <Image src="./image/bia.png" alt="bia" width={100} height={80}/>
       </div>
-
   )
 }

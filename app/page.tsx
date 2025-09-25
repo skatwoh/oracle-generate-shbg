@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import VersionChecker from "@/components/VersionChecker";
 
 interface ValidationResult {
   isValid: boolean
@@ -280,6 +281,7 @@ export default function OracleCodeGenerator() {
       <div className="min-h-screen street-pattern bg-background p-4">
         <PetRunner />
         <Toaster />
+        <VersionChecker />
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="text-center space-y-4 py-8">
             <div className="flex items-center justify-center gap-3 mb-4">

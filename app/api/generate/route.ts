@@ -76,8 +76,8 @@ const PROVINCE_CODES = [
 
 // Cập nhật function generateShbg để kiểm tra trùng lặp
 async function generateShbg(
-  req: GenerateRequest,
-  maxRetries = 10,
+    req: GenerateRequest,
+    maxRetries = 10,
 ): Promise<{
   generatedCode: string
   serviceInfo: any
@@ -96,7 +96,7 @@ async function generateShbg(
     let format = ""
     let serviceName = ""
 
-    // Determine prefix based on service code (giữ nguyên logic cũ)
+    // Determine prefix based on service code
     switch (upperServiceCode.substring(0, 3)) {
       case "RTN":
         prefix = "R" + getRandomChar("ABCDEFGHIJKLMNLOPQSUVTYWXYZ")
@@ -135,7 +135,6 @@ async function generateShbg(
           const numbers = generateRandomNumbers(10)
           const generatedCode = prefix + numbers
 
-          // Kiểm tra trong PORTAL_ITEM_DTL
           const existsInDb = await db.checkShbgExists(generatedCode)
           if (!existsInDb) {
             return {
@@ -149,7 +148,7 @@ async function generateShbg(
               existsInDb: false,
             }
           }
-          continue // Try again if exists
+          continue
         } else {
           // Generate 18-character UPS code
           const code = generateRandomAlphaNumeric(18)
@@ -166,7 +165,7 @@ async function generateShbg(
               existsInDb: false,
             }
           }
-          continue // Try again if exists
+          continue
         }
       case "DHL":
         serviceName = "DHL"
@@ -184,7 +183,7 @@ async function generateShbg(
             existsInDb: false,
           }
         }
-        continue // Try again if exists
+        continue
       case "VNQ":
         prefix = "QP"
         serviceName = "VNQ"
@@ -227,10 +226,48 @@ async function generateShbg(
         serviceName = `HCC${upperServiceCode.substring(3)}`
         format = "13 ký tự: tiền tố + 9 số + mã kiểm tra + VN"
         break
+      case "TQT":
+        if (serviceCode === "TQT006") {
+          prefix = "U" + getRandomChar("ABCDEFGHIJKLMNOPQRSUVWXYZ")
+          serviceName = "TQT006"
+          format = "13 ký tự: U + ký tự + 9 số + mã kiểm tra + VN"
+        } else {
+          throw new Error("Service code TQT không được hỗ trợ")
+        }
+        break
+      case "CQT":
+        if (serviceCode === "CQT001") {
+          prefix = "KP"
+        } else if (["CQT002", "CQT003", "CQT006"].includes(serviceCode)) {
+          prefix = "CP"
+        } else {
+          throw new Error("Service code CQT không được hỗ trợ")
+        }
+        serviceName = serviceCode
+        format = "13 ký tự: tiền tố + 9 số + mã kiểm tra + VN"
+        break
+      case "EQT":
+        prefix = "ET"
+        serviceName = "EQT"
+        format = "13 ký tự: ET + 9 số + mã kiểm tra + VN"
+        break
+      case "RQT":
+        if (["RQT001", "RQT002", "RQT003", "RQT004", "RQT005", "RQT006"].includes(serviceCode)) {
+          prefix = "RR"
+          serviceName = serviceCode
+          format = "13 ký tự: RR + 9 số + mã kiểm tra + VN"
+        } else {
+          throw new Error("Service code RQT không được hỗ trợ")
+        }
+        break
       default:
         // Handle TDT services
         if (["TDT001", "TDT002"].includes(serviceCode)) {
-          prefix = "E" + getRandomChar("ABCDEFGHIJKLMNOPQRSUVWXYZ")
+          if (isPackageIncident === "1") {
+            prefix = "EX"
+          } else {
+            prefix = "E" + getRandomChar("ABCDEFGHIJKLMNOPQRSUVWXYZ")
+          }
           serviceName = "TMDT"
           format = "13 ký tự: E + ký tự + 9 số + mã kiểm tra + VN"
         } else if (serviceCode === "TDT003") {
@@ -242,9 +279,12 @@ async function generateShbg(
           serviceName = "TMDT < 30kg"
           format = "13 ký tự: C + ký tự + 9 số + mã kiểm tra + VN"
         } else {
-          throw new Error("Service code không được hỗ trợ")
+          throw new Error(`Service code ${serviceCode} không được hỗ trợ`)
         }
     }
+
+    // For services that return early (UPS, DHL), they already handle the response
+    // For 13-character codes, continue with the standard generation logic
 
     // Generate the main number part (8 digits) for 13-character codes
     const provinceCode = pocode ? pocode.substring(0, 2) : getRandomProvinceCode()
@@ -253,14 +293,14 @@ async function generateShbg(
 
     // Calculate check digit
     const sum =
-      Number.parseInt(numberPart[0]) * 8 +
-      Number.parseInt(numberPart[1]) * 6 +
-      Number.parseInt(numberPart[2]) * 4 +
-      Number.parseInt(numberPart[3]) * 2 +
-      Number.parseInt(numberPart[4]) * 3 +
-      Number.parseInt(numberPart[5]) * 5 +
-      Number.parseInt(numberPart[6]) * 9 +
-      Number.parseInt(numberPart[7]) * 7
+        Number.parseInt(numberPart[0]) * 8 +
+        Number.parseInt(numberPart[1]) * 6 +
+        Number.parseInt(numberPart[2]) * 4 +
+        Number.parseInt(numberPart[3]) * 2 +
+        Number.parseInt(numberPart[4]) * 3 +
+        Number.parseInt(numberPart[5]) * 5 +
+        Number.parseInt(numberPart[6]) * 9 +
+        Number.parseInt(numberPart[7]) * 7
 
     const div = 11 - (sum % 11)
     let checkDigit: string
@@ -275,7 +315,7 @@ async function generateShbg(
 
     const generatedCode = prefix + numberPart + checkDigit + "VN"
 
-    // Kiểm tra trong bảng PORTAL_ITEM_DTL với trường TT_NUMBER
+    // Check if code exists in database
     const codeExistsInDb = await db.checkShbgExists(generatedCode)
     if (!codeExistsInDb) {
       return {
@@ -295,7 +335,7 @@ async function generateShbg(
   }
 
   throw new Error(
-    `Không thể sinh mã duy nhất sau ${maxRetries} lần thử. Tất cả mã đều đã tồn tại trong PORTAL_ITEM_DTL.`,
+      `Không thể sinh mã duy nhất sau ${maxRetries} lần thử. Tất cả mã đều đã tồn tại trong PORTAL_ITEM_DTL.`,
   )
 }
 
