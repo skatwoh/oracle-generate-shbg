@@ -38,7 +38,7 @@ export default function PetRunner() {
         zIndex: 9999,
       }}
     >
-      🐕 🐕 🐕
+      🌊🌊🌊🌊🌊
     </div>
   )
 }
