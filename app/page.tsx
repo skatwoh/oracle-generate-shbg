@@ -430,27 +430,27 @@ export default function OracleCodeGenerator() {
         <Toaster />
         <VersionChecker />
 
-        <div className="relative z-10 max-w-6xl mx-auto p-6 space-y-8">
-          <div className="text-center space-y-6 py-12">
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 text-white shadow-lg mb-4">
-              <Zap className="h-5 w-5 text-white" />
-              <span className="text-sm font-medium text-white">Công cụ tự động hóa</span>
-            </div>
+        <div className="relative z-10 max-w-6xl mx-auto p-5 space-y-6">
+          <div className="text-center space-y-4 py-10">
+            {/*<div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 text-white shadow-lg mb-4">*/}
+            {/*  <Zap className="h-5 w-5 text-white" />*/}
+            {/*  <span className="text-sm font-medium text-white">Công cụ tự động hóa</span>*/}
+            {/*</div>*/}
 
             <h1 className="text-5xl md:text-6xl font-bold text-balance leading-tight">
             <span className="bg-gradient-to-r from-emerald-500 via-blue-600 to-purple-600 bg-clip-text text-transparent">
               Hệ thống sinh mã
             </span>
-              <br />
-              <span className="text-slate-800">mã vận đơn</span>
+              {/*<br />*/}
+              {/*<span className="text-slate-800">mã vận đơn</span>*/}
             </h1>
 
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto text-balance">
-              Tạo và kiểm tra mã vận đơn tự động với công nghệ hiện đại. Hỗ trợ sinh hàng loạt và theo dõi lịch sử chi
-              tiết.
-            </p>
+            {/*<p className="text-xl text-slate-600 max-w-2xl mx-auto text-balance">*/}
+            {/*  Tạo và kiểm tra mã vận đơn tự động với công nghệ hiện đại. Hỗ trợ sinh hàng loạt và theo dõi lịch sử chi*/}
+            {/*  tiết.*/}
+            {/*</p>*/}
 
-            <div className="flex justify-center gap-4 mt-8">
+            <div className="flex justify-center gap-4 mt-6">
               <div className="bg-gradient-to-r from-emerald-400 to-green-500 px-6 py-4 rounded-xl shadow-lg text-white">
                 <div className="text-3xl font-bold text-white">{getStats().total}</div>
                 <div className="text-sm text-emerald-100">Tổng số mã</div>
