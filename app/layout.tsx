@@ -14,8 +14,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "./logo/tinder.ico",
   },
-  description: "Công cụ tạo và kiểm tra mã vận đơn tự động với giao diện hiện đại",
-    generator: 'v0.app'
+  description: "Công cụ tạo và kiểm tra mã vận đơn tự động",
 }
 
 export default function RootLayout({

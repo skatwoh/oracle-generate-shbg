@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "generate-shbg",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -53,6 +53,7 @@
     "next": "14.2.16",
     "next-themes": "latest",
     "oracledb": "latest",
+    "primereact": "^10.9.7",
     "react": "^18",
     "react-day-picker": "latest",
     "react-dom": "^18",
